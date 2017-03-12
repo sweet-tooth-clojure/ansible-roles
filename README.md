@@ -158,7 +158,7 @@ from the character sheet example:
     (final (config/full))))
 ```
 
-Ignore `final`; it just does some error handling. The main thing to
-note is that the `-main` function's first argument, `cmd`, corresponds
-to the first command line argument. The `-main` function switches on
-`cmd` and evaluates the appropriate expression.
+Ignore `final`; it just does some error handling. The **main** (ah ha
+ha!) thing to note is that the `-main` function's first argument,
+`cmd`, corresponds to the first command line argument. The `-main`
+function switches on `cmd` and evaluates the appropriate expression.
