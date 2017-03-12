@@ -21,7 +21,7 @@ The project includes four
 for setting up a server for Clojure- and Datomic-based web apps, and
 for actually doing deployments. These roles are:
 
-* [clojure-uberjar-webapp-common](https://github.com/sweet-tooth-clojure/ansible-role-clojure-uberjar-webapp-common)
+* [clojure-uberjar-webapp-common](https://github.com/sweet-tooth-clojure/ansible-role-clojure-uberjar-webapp-common):
   a lightweight role that contains variable definitions common to the
   rest of the roles
 * [clojure-uberjar-webapp-app](https://github.com/sweet-tooth-clojure/ansible-role-clojure-uberjar-webapp-app):
@@ -30,7 +30,7 @@ for actually doing deployments. These roles are:
 * [clojure-uberjar-webapp-nginx](https://github.com/sweet-tooth-clojure/ansible-role-clojure-uberjar-webapp-nginx):
   a role that installs and configures an nginx server to reverse-proxy
   an application server
-* [datomic-free](https://github.com/sweet-tooth-clojure/ansible-role-datomic-free)
+* [datomic-free](https://github.com/sweet-tooth-clojure/ansible-role-datomic-free):
   a role that installs Datomic Free and configures it to run as an
   Upstart service
 
