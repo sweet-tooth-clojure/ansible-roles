@@ -6,7 +6,9 @@ site**. Here, you'll find concise instructions on using the tools. If
 you're new to Ansible or to server management/devops,
 [_Deploying Your First Clojure App ...From the Shadows_](http://www.braveclojure.com/quests/deploy/)
 is a 70-page book for beginners that explains everything you need to
-know to get your site online.
+know to get your site online. It explains each of these roles in
+extreme detail, explaining how everything works together to get your
+site running.
 
 ## What is this?
 
