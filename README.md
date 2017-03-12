@@ -61,5 +61,104 @@ action. This uses the
 a fully-functioning Clojure app that's been configured to use the
 Ansible roles.
 
-## Basic Usage
+## Usage
 
+You'll need to:
+
+* Set a playbook variable
+* Ensure your uberjar gets moved to the correct location
+* Ensure you app responds to the commands for starting a server and
+  migrating a database
+
+### Playbook Setup
+
+At a minimum, you'll need to create a playbook that uses the Sweet
+Tooth roles and sets the _clojure_uberjar_webapp_domain_ variable:
+
+```yaml
+---
+- hosts: webservers
+  become: true
+  become_method: sudo
+  vars:
+    clojure_uberjar_webapp_domain: "localhost"
+  roles:
+    - "sweet-tooth-clojure.clojure-uberjar-webapp-common"
+    - "sweet-tooth-clojure.clojure-uberjar-webapp-app"
+    - "sweet-tooth-clojure.clojure-uberjar-webapp-nginx"
+
+- hosts: database
+  become: true
+  become_method: sudo
+  vars:
+    clojure_uberjar_webapp_domain: "localhost"
+  roles:
+    - "sweet-tooth-clojure.clojure-uberjar-webapp-common"
+    - "sweet-tooth-clojure.datomic-free"
+```
+
+In this example, _clojure_uberjar_webapp_domain_ is set to
+`"localhost"`, which is appropriate if you're trying this on a local
+VM. For a VPS, you'll want to use your site's domain name. Many other
+variables are derived from _clojure_uberjar_webapp_domain_, including
+the variable used to set the nginx config's `server_name`. Check out
+the READMEs of each of the other repos to see what other vars can get
+configged. The roles were designed so that nearly everything can be
+customized.
+
+The app deployment task expects your app's uberjar to live at
+_files/app.jar_ relative to your Ansible playbook. If your playbook is
+under _infrastructure/ansible/sweet-tooth.yml_, then you need to copy
+your uberjar to _infrastructure/ansible/files/app.jar_.
+
+### App Commands
+
+These roles create an Upstart script that starts your Clojure uberjar
+with, essentially:
+
+```
+java -jar /path/to/uberjar.jar server
+```
+
+They perform database migrations with:
+
+```
+java -jar /path/to/uberjar.jar db/migrate
+```
+
+Finally, they perform a post-deployment check with
+
+```
+java -jar /path/to/uberjar.jar deploy/check
+```
+
+
+Therefore, your Clojure application's `-main` function must be able to
+respond to these command line arguments. Here's the `-main` function
+from the character sheet example:
+
+```clojure
+(defn -main
+  [cmd & args]
+  (case cmd
+    "server"
+    (component/start-system (system))
+    
+    "db/install-schemas"
+    (final
+      (let [{:keys [db schema data]} (config/db)]
+        (d/create-database db)
+        (datb/conform (d/connect db)
+                      schema
+                      data
+                      config/seed-post-inflate)))
+
+    "deploy/check"
+    ;; ensure that all config vars are set
+    (final (config/full))))
+```
+
+Ignore `final`; it just does some error handling. The main thing to
+note is that the `-main` function's first argument, `cmd`, corresponds
+to the first command line argument. The `-main` function switches on
+`cmd` and evaluates the appropriate expression.
